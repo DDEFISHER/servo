@@ -28,8 +28,9 @@ use selectors::Element;
 use selectors::matching::DeclarationBlock;
 use selectors::parser::{AttrSelector, NamespaceConstraint};
 use smallvec::VecLike;
-use std::cell::{Ref, RefCell, RefMut};
+use std::cell::{Cell, Ref, RefCell, RefMut, UnsafeCell};
 use std::marker::PhantomData;
+use std::mem;
 use std::ops::BitOr;
 use std::ptr;
 use std::slice;
@@ -211,7 +212,18 @@ impl<'ln> TNode for GeckoNode<'ln> {
 
     #[inline(always)]
     unsafe fn borrow_data_unchecked(&self) -> Option<*const PrivateStyleData> {
-        self.get_node_data().as_ref().map(|d| d.as_unsafe_cell().get() as *const PrivateStyleData)
+        self.get_node_data().as_ref().map(|r| {
+
+            struct HopefullyLikeRefCell<T: ?Sized> {
+                _borrow: Cell<BorrowFlag>,
+                value: UnsafeCell<T>,
+            }
+            type BorrowFlag = usize;
+
+            let r = mem::transmute::<&RefCell<PrivateStyleData>,
+                                     &HopefullyLikeRefCell<PrivateStyleData>>(r);
+            r.value.get() as *const PrivateStyleData
+        })
     }
 
     #[inline(always)]
