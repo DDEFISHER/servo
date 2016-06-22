@@ -2,6 +2,27 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+//! Calculate [computed values][computed] from a tree of DOM nodes and a set of
+//! stylesheets.
+//!
+//! In particular, this crate contains the definitions of supported properties,
+//! the code to parse them into [specified values][specified] and calculate the
+//! computed values based on the specified values, as well as the code to
+//! serialize both specified and computed values.
+//!
+//! Major dependencies are the [cssparser][cssparser] and [selectors][selectors]
+//! crates.
+//!
+//! [computed]: https://drafts.csswg.org/css-cascade/#computed
+//! [specified]: https://drafts.csswg.org/css-cascade/#specified
+//! [cssparser]: ../cssparser/index.html
+//! [selectors]: ../selectors/index.html
+//!
+//!
+//! ## Adding a new property
+//!
+//! See ...
+
 #![feature(box_syntax)]
 #![feature(box_patterns)]
 #![feature(concat_idents)]
